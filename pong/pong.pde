@@ -1,6 +1,16 @@
+import processing.sound.*;
 PFont font;
+PImage backim;
+PImage Pina;
+SoundFile back;
+SoundFile back2;
 void setup() {
   fullScreen(P2D);
+  //Soundtracks
+  // back2 = new SoundFile(this, "Back2.mp3");
+   back = new SoundFile(this,"Back.mp3");
+   back.loop();
+  
   frameRate(60);
   rectMode(RADIUS);
   font = loadFont("Fuente1.vlw");
@@ -8,6 +18,8 @@ void setup() {
   j1 = new Player(50.0, height/2);
   j2 = new Player(width-50.0, height/2);
   b = new Ball(width/2, height/2, random(-10, 10), random(-2, 2));
+  Pina = loadImage("Piña.png");
+  backim = loadImage ("Beach.jpg");
 }
 
 boolean p1[] = new boolean [2];
@@ -17,9 +29,12 @@ Player j1;
 Player j2;
 Ball b;
 int bkg = 0;
+int bkgimg = 0;
 
 void draw() {
-  background(0);
+  if(bkgimg>0){
+    background(backim);
+  }else background(0);
 //UI
   strokeWeight(7);
   stroke(255);
@@ -164,6 +179,7 @@ class Ball {
   PVector pos = new PVector();
   
   public int rad = 20;//radio de la pelota
+  public int radp = 80;//radio de la piña
   public int rellenoball1=255;//relleno de la bola R (RGB)
   public int rellenoball2 = 255;//relleno de la bola GB (RGB)
   
@@ -182,7 +198,7 @@ class Ball {
     if (pos.y+speed.y+10 >= height) speed.y = -speed.y;
 
     // Player 1
-    if (pos.x + speed.x - rad <= j1.pos.x && pos.y + speed.y - rad <= j1.pos.y+j1.len && pos.y + speed.y >= j1.pos.y - j1.len) {
+    if (pos.x + speed.x - rad <= j1.pos.x && (pos.y + speed.y - rad <= j1.pos.y+j1.len || pos.y + speed.y - radp <= j1.pos.y+j1.len) && pos.y + speed.y >= j1.pos.y - j1.len) {
       if (j1.mult==2) {
         rellenoball1=255;
         rellenoball2 =0;
@@ -198,7 +214,7 @@ class Ball {
       j1.mult = 1.05;
       speed.y += (j1.speed.y*1.0/frameRate)*0.5;
     }
-    if (pos.x + speed.x + 20 >= j2.pos.x && pos.y + speed.y - rad <= j2.pos.y+j2.len && pos.y + speed.y >= j2.pos.y - j2.len) {
+    if (pos.x + speed.x + rad >= j2.pos.x && (pos.y + speed.y - rad <= j2.pos.y+j2.len || pos.y + speed.y - radp <= j2.pos.y+j2.len)  && pos.y + speed.y >= j2.pos.y - j2.len) {
        if (j2.mult==2) {
         rellenoball1=255;
         rellenoball2 =0;
@@ -233,9 +249,17 @@ class Ball {
 }
 
   void render() {
+    if(bkgimg==1){
+    imageMode(CENTER); 
+    image(Pina,pos.x,pos.y, radp, radp);
+    
+    }else{
+      
     strokeWeight(1);
     fill(rellenoball1, rellenoball2, rellenoball2);
     ellipse(pos.x, pos.y, rad, rad);
+    
+    }
   }
 }
 
@@ -309,6 +333,12 @@ void keyPressed() {
   if(football ==false){
     football=true;
   }else football = false;
+  
+  //Fondo Playa
+  case 'n':
+  if(bkgimg<1){
+    bkgimg = 1;
+  }else bkgimg = 0;
  }
 }
 
